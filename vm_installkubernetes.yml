@@ -1,0 +1,25 @@
+- name: Configure Node VM
+  hosts: azure
+  user: azureuser
+  become: no
+
+  vars:
+    myResourceGroup: coursework_2
+    myVM: ansible-node
+
+  tasks:
+  - stat:
+      path: /home/azureuser/kubernetes.sh
+    register: result
+
+  - name: Copy kubernetes.sh to Node
+    copy:
+      src: ./kubernetes.sh
+      dest: /home/azureuser/kubernetes.sh
+    when: result.stat.exists == false
+
+  - name: Set kubernetes.sh permissions
+    command: sudo chmod +x /home/azureuser/kubernetes.sh
+
+  - name: Run Kubernetes installation script
+    command: /home/azureuser/kubernetes.sh
